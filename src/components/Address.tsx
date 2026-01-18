@@ -17,9 +17,9 @@ export function Address({ addr }: { addr: string }) {
     getNameFromAddress(addr).then(data => {
       if (data.ok) {
         const { name, namespace } = data.ok;
-        const nameStr = hex_to_ascii(name.value);
+        const nameStr = hex_to_ascii(name);
         const namePunycodeStr = toUnicode(nameStr);
-        const namespaceStr = hex_to_ascii(namespace.value);
+        const namespaceStr = hex_to_ascii(namespace);
         setNameAscii(nameStr === namePunycodeStr ? undefined : `${nameStr}.${namespaceStr}`);
         setNameOrAddress(`${namePunycodeStr}.${namespaceStr}`);
       }

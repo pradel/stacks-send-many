@@ -3,7 +3,7 @@ import { BNS_CONTRACT_ADDRESS, BNS_CONTRACT_NAME, NETWORK } from './constants';
 import { bnsV2Abi } from './abi';
 
 export const getNameFromAddress = async (addr: string) => {
-  const result = typedCallReadOnlyFunction({
+  const result = await typedCallReadOnlyFunction({
     abi: bnsV2Abi,
     contractAddress: BNS_CONTRACT_ADDRESS,
     contractName: BNS_CONTRACT_NAME,
@@ -17,12 +17,19 @@ export const getNameFromAddress = async (addr: string) => {
 
 export const getNameInfo = async (fqName: string) => {
   const [name, namespace] = fqName.split('.');
-  const result = typedCallReadOnlyFunction({
+  const result = await typedCallReadOnlyFunction({
     abi: bnsV2Abi,
     contractAddress: BNS_CONTRACT_ADDRESS,
     contractName: BNS_CONTRACT_NAME,
     functionName: 'get-bns-info',
-    functionArgs: [name as `0x${string}`, namespace as `0x${string}`],
+    functionArgs: [
+      `0x${Array.from(new TextEncoder().encode(name))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')}`,
+      `0x${Array.from(new TextEncoder().encode(namespace))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')}`,
+    ],
     senderAddress: BNS_CONTRACT_ADDRESS,
     network: NETWORK,
   });

@@ -4,6 +4,9 @@
  * @returns ASCII string
  */
 export function hex_to_ascii(hexString: string): string {
+  if (hexString.startsWith('0x')) {
+    hexString = hexString.slice(2);
+  }
   let result = '';
   for (let i = 0; i < hexString.length; i += 2) {
     const hexByte = hexString.substring(i, i + 2);

@@ -57,8 +57,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       clarity-abitype:
-        specifier: 0.3.0
-        version: 0.3.0(@stacks/network@7.3.1)(@stacks/transactions@7.3.1)(typescript@5.9.3)
+        specifier: 0.3.1
+        version: 0.3.1(@stacks/network@7.3.1)(@stacks/transactions@7.3.1)(typescript@5.9.3)
       global:
         specifier: ^4.4.0
         version: 4.4.0
@@ -2717,8 +2717,8 @@ packages:
   cjs-module-lexer@1.4.3:
     resolution: {integrity: sha512-9z8TZaGM1pfswYeXrUpzPrkx8UnWYdhJclsiYMm6x/w5+nN+8Tf/LnAgfLGQCm59qAOxU8WwHEq2vNwF6i4j+Q==}
 
-  clarity-abitype@0.3.0:
-    resolution: {integrity: sha512-LXPK8K3IddES5pHM3/lB0rNgCVEeTwIRI/uXq6bJWTalQbWVeKTpAfuSfkOl8qZh+fTFJ099CV66hy5HNdhqUQ==}
+  clarity-abitype@0.3.1:
+    resolution: {integrity: sha512-zT1T4MuMkNKapXShAy6S+1L40riO2TXFaMYFqVsEtP83VNd75OSKdIc0mTzP7L6SfVQoYe1XKhsnwzYelKc9+A==}
     peerDependencies:
       '@stacks/clarinet-sdk': '>= 3.0.0'
       '@stacks/network': '>= 7.3.0'
@@ -9951,7 +9951,7 @@ snapshots:
 
   cjs-module-lexer@1.4.3: {}
 
-  clarity-abitype@0.3.0(@stacks/network@7.3.1)(@stacks/transactions@7.3.1)(typescript@5.9.3):
+  clarity-abitype@0.3.1(@stacks/network@7.3.1)(@stacks/transactions@7.3.1)(typescript@5.9.3):
     optionalDependencies:
       '@stacks/network': 7.3.1
       '@stacks/transactions': 7.3.1

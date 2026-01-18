@@ -1,9 +1,6 @@
 import {
   AuthType,
   bufferCVFromString,
-  ClarityType,
-  contractPrincipalCV,
-  cvToString,
   listCV,
   noneCV,
   Pc,
@@ -41,15 +38,7 @@ export type Row = {
   stx: string;
   memo?: string;
   error?: string;
-  toCV?: PrincipalCV;
-};
-const addrToCV = (addr: string) => {
-  const toParts = addr.split('.');
-  if (toParts.length === 1) {
-    return standardPrincipalCV(toParts[0]);
-  } else {
-    return contractPrincipalCV(toParts[0], toParts[1]);
-  }
+  toCV?: string;
 };
 
 const addToCVValues = async <T extends Row>(parts: T[]) => {
@@ -59,16 +48,18 @@ const addToCVValues = async <T extends Row>(parts: T[]) => {
         return p;
       }
       try {
-        return { ...p, toCV: addrToCV(p.to) };
+        return { ...p, toCV: p.to };
       } catch (e) {
         try {
           const owner = await getNameInfo(toAscii(p.to));
+          console.log('owner, ', owner);
           if (owner?.owner) {
             return { ...p, toCV: owner.owner };
           } else {
             return { ...p, error: `No address for ${p.to}` };
           }
         } catch (e2) {
+          console.log('Error in getNameInfo:', e2);
           return { ...p, error: `${p.to} not found` };
         }
       }
@@ -168,7 +159,7 @@ export function SendManyInputContainer({
             setNamesResolved(!!p.toCV);
             return (
               <Fragment key={index}>
-                {p.error || (p.toCV ? <Address addr={cvToString(p.toCV)} /> : '...')}:{' '}
+                {p.error || (p.toCV ? <Address addr={p.toCV} /> : '...')}:{' '}
                 <Amount amount={p.ustx} asset={asset} /> <br />
                 <br />
               </Fragment>
