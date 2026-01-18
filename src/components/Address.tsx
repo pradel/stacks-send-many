@@ -14,7 +14,8 @@ export function Address({ addr }: { addr: string }) {
   const [showAscii, setShowAscii] = useState(false);
 
   useEffect(() => {
-    getNameFromAddress(addr).then(data => {
+    const fn = async (addr: string) => {
+      const data = await getNameFromAddress(addr);
       if (data.ok) {
         const { name, namespace } = data.ok;
         const nameStr = hex_to_ascii(name);
@@ -23,7 +24,9 @@ export function Address({ addr }: { addr: string }) {
         setNameAscii(nameStr === namePunycodeStr ? undefined : `${nameStr}.${namespaceStr}`);
         setNameOrAddress(`${namePunycodeStr}.${namespaceStr}`);
       }
-    });
+    };
+
+    fn(addr);
   }, [addr]);
 
   return (

@@ -23,7 +23,7 @@ describe('getNameFromAddress', () => {
 
       console.log(`Resolved: ${nameStr}.${namespaceStr}`);
     } else {
-      throw new Error(`Expected ResponseOk with Tuple, got ${result.type}`);
+      throw new Error('Expected ok');
     }
   }, 10000); // Increase timeout for network call
 });
