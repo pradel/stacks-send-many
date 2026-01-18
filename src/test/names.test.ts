@@ -8,11 +8,10 @@ describe('getNameFromAddress', () => {
     const address = 'SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X';
     const result = await getNameFromAddress(address);
 
+    // Should return a successful response
+    expect(result.ok).toBeTruthy();
     if (result.ok) {
-      // Should return a successful response
-      expect(result.ok).toBeTruthy();
-      const name = result.ok.name;
-      const namespace = result.ok.namespace;
+      const { name, namespace } = result.ok;
 
       // Convert hex-encoded values to ASCII
       const nameStr = hex_to_ascii(name);
