@@ -8,12 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@scure/bip32':
-        specifier: ^1.7.0
-        version: 1.7.0
-      '@scure/btc-signer':
-        specifier: ^1.8.1
-        version: 1.8.1
       '@stacks/blockchain-api-client':
         specifier: ^8.13.5
         version: 8.13.5
@@ -62,6 +56,9 @@ importers:
       c32check:
         specifier: ^2.0.0
         version: 2.0.0
+      clarity-abitype:
+        specifier: 0.3.0
+        version: 0.3.0(@stacks/network@7.3.1)(@stacks/transactions@7.3.1)(typescript@5.9.3)
       global:
         specifier: ^4.4.0
         version: 4.4.0
@@ -2719,6 +2716,23 @@ packages:
 
   cjs-module-lexer@1.4.3:
     resolution: {integrity: sha512-9z8TZaGM1pfswYeXrUpzPrkx8UnWYdhJclsiYMm6x/w5+nN+8Tf/LnAgfLGQCm59qAOxU8WwHEq2vNwF6i4j+Q==}
+
+  clarity-abitype@0.3.0:
+    resolution: {integrity: sha512-LXPK8K3IddES5pHM3/lB0rNgCVEeTwIRI/uXq6bJWTalQbWVeKTpAfuSfkOl8qZh+fTFJ099CV66hy5HNdhqUQ==}
+    peerDependencies:
+      '@stacks/clarinet-sdk': '>= 3.0.0'
+      '@stacks/network': '>= 7.3.0'
+      '@stacks/transactions': '>= 7.3.0'
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      '@stacks/clarinet-sdk':
+        optional: true
+      '@stacks/network':
+        optional: true
+      '@stacks/transactions':
+        optional: true
+      typescript:
+        optional: true
 
   clean-deep@3.4.0:
     resolution: {integrity: sha512-Lo78NV5ItJL/jl+B5w0BycAisaieJGXK1qYi/9m4SjR8zbqmrUtO7Yhro40wEShGmmxs/aJLI/A+jNhdkXK8mw==}
@@ -9936,6 +9950,12 @@ snapshots:
       consola: 3.4.2
 
   cjs-module-lexer@1.4.3: {}
+
+  clarity-abitype@0.3.0(@stacks/network@7.3.1)(@stacks/transactions@7.3.1)(typescript@5.9.3):
+    optionalDependencies:
+      '@stacks/network': 7.3.1
+      '@stacks/transactions': 7.3.1
+      typescript: 5.9.3
 
   clean-deep@3.4.0:
     dependencies:

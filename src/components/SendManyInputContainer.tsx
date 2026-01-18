@@ -63,8 +63,8 @@ const addToCVValues = async <T extends Row>(parts: T[]) => {
       } catch (e) {
         try {
           const owner = await getNameInfo(toAscii(p.to));
-          if (owner.type === ClarityType.OptionalSome) {
-            return { ...p, toCV: owner.value.value.owner };
+          if (owner?.owner) {
+            return { ...p, toCV: owner.owner };
           } else {
             return { ...p, error: `No address for ${p.to}` };
           }

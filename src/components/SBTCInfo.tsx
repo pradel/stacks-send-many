@@ -1,6 +1,7 @@
-import { cvToString, fetchCallReadOnlyFunction, PrincipalCV, TupleCV } from '@stacks/transactions';
 import { useEffect, useState } from 'react';
+import { typedCallReadOnlyFunction } from 'clarity-abitype';
 import { NETWORK } from '../lib/constants';
+import { sbtcRegistryAbi } from '../lib/abi';
 
 export function SBTCInfo({ assetId }: { assetId: string }) {
   const [info, setInfo] = useState<string>();
@@ -9,17 +10,16 @@ export function SBTCInfo({ assetId }: { assetId: string }) {
     const fn = async () => {
       const [contractId, _] = assetId.split('::');
       const [contractAddress] = contractId.split('.');
-      const response = (await fetchCallReadOnlyFunction({
+      const response = await typedCallReadOnlyFunction({
+        abi: sbtcRegistryAbi,
         contractAddress,
         contractName: 'sbtc-registry',
         functionName: 'get-current-signer-data',
-        functionArgs: [],
         senderAddress: contractAddress,
         network: NETWORK,
-      })) as TupleCV<{ 'current-signer-principal': PrincipalCV }>;
-      setInfo(
-        `Current sBTC signer Stacks address: ${cvToString(response.value['current-signer-principal'])}`
-      );
+      });
+
+      setInfo(`Current sBTC signer Stacks address: ${response['current-signer-principal']}`);
     };
     fn().catch(e => {
       setInfo(`Failed to load signer data. (${e.message})`);

@@ -10,8 +10,6 @@
     "url": "git+https://github.com/friedger/stacks-send-many.git"
   },
   "dependencies": {
-    "@scure/bip32": "^1.7.0",
-    "@scure/btc-signer": "^1.8.1",
     "@stacks/blockchain-api-client": "^8.13.5",
     "@stacks/common": "7.3.1",
     "@stacks/connect": "^8.2.3",
@@ -28,6 +26,7 @@
     "@walletconnect/types": "^2.23.1",
     "@walletconnect/utils": "^2.23.1",
     "c32check": "^2.0.0",
+    "clarity-abitype": "0.3.0",
     "global": "^4.4.0",
     "jdenticon": "^3.3.0",
     "jotai": "^2.16.0",

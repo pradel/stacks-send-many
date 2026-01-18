@@ -1,4 +1,3 @@
-import { ClarityType } from '@stacks/transactions';
 import toUnicode from 'punycode2/to-unicode';
 import { useEffect, useMemo, useState } from 'react';
 import { hex_to_ascii } from '../lib/string-utils';
@@ -16,9 +15,8 @@ export function Address({ addr }: { addr: string }) {
 
   useEffect(() => {
     getNameFromAddress(addr).then(data => {
-      if (data.type === ClarityType.ResponseOk && data.value.type === ClarityType.OptionalSome) {
-        const { name, namespace } = data.value.value.value;
-
+      if (data.ok) {
+        const { name, namespace } = data.ok;
         const nameStr = hex_to_ascii(name.value);
         const namePunycodeStr = toUnicode(nameStr);
         const namespaceStr = hex_to_ascii(namespace.value);

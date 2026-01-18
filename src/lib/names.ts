@@ -1,51 +1,31 @@
-import {
-  BufferCV,
-  bufferCVFromString,
-  fetchCallReadOnlyFunction,
-  OptionalCV,
-  PrincipalCV,
-  principalCV,
-  ResponseErrorCV,
-  ResponseOkCV,
-  TupleCV,
-  UIntCV,
-} from '@stacks/transactions';
+import { typedCallReadOnlyFunction } from 'clarity-abitype';
 import { BNS_CONTRACT_ADDRESS, BNS_CONTRACT_NAME, NETWORK } from './constants';
+import { bnsV2Abi } from './abi';
 
 export const getNameFromAddress = async (addr: string) => {
-  let addrCV = principalCV(addr);
-  const result = (await fetchCallReadOnlyFunction({
+  const result = typedCallReadOnlyFunction({
+    abi: bnsV2Abi,
     contractAddress: BNS_CONTRACT_ADDRESS,
     contractName: BNS_CONTRACT_NAME,
     functionName: 'get-primary',
-    functionArgs: [addrCV],
+    functionArgs: [addr],
     senderAddress: addr,
     network: NETWORK,
-  })) as
-    | ResponseErrorCV
-    | ResponseOkCV<OptionalCV<TupleCV<{ name: BufferCV; namespace: BufferCV }>>>;
+  });
   return result;
 };
 
 export const getNameInfo = async (fqName: string) => {
   const [name, namespace] = fqName.split('.');
-  const result = (await fetchCallReadOnlyFunction({
+  const result = typedCallReadOnlyFunction({
+    abi: bnsV2Abi,
     contractAddress: BNS_CONTRACT_ADDRESS,
     contractName: BNS_CONTRACT_NAME,
     functionName: 'get-bns-info',
-    functionArgs: [bufferCVFromString(name), bufferCVFromString(namespace)],
+    functionArgs: [name as `0x${string}`, namespace as `0x${string}`],
     senderAddress: BNS_CONTRACT_ADDRESS,
     network: NETWORK,
-  })) as
-    | OptionalCV<
-        TupleCV<{
-          owner: PrincipalCV;
-          'renewal-height': UIntCV;
-          'registered-at': OptionalCV<UIntCV>;
-          'imported-at': OptionalCV<UIntCV>;
-        }>
-      >
-    | ResponseErrorCV;
+  });
   console.log({ result });
   return result;
 };
