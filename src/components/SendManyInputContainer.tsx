@@ -1,12 +1,12 @@
 import {
   AuthType,
   bufferCVFromString,
+  contractPrincipalCV,
   listCV,
   noneCV,
   Pc,
   PostConditionMode,
   principalCV,
-  PrincipalCV,
   someCV,
   standardPrincipalCV,
   trueCV,
@@ -41,30 +41,26 @@ export type Row = {
   toCV?: string;
 };
 
-const addToCVValues = async <T extends Row>(parts: T[]) => {
-  return Promise.all(
-    parts.map(async p => {
-      if (p.to === '') {
-        return p;
-      }
-      try {
-        return { ...p, toCV: p.to };
-      } catch (e) {
-        try {
-          const owner = await getNameInfo(toAscii(p.to));
-          console.log('owner, ', owner);
-          if (owner?.owner) {
-            return { ...p, toCV: owner.owner };
-          } else {
-            return { ...p, error: `No address for ${p.to}` };
-          }
-        } catch (e2) {
-          console.log('Error in getNameInfo:', e2);
-          return { ...p, error: `${p.to} not found` };
-        }
-      }
-    })
-  );
+const addrToCV = (addr: string) => {
+  const toParts = addr.split('.');
+  if (toParts.length === 1) {
+    return standardPrincipalCV(toParts[0]);
+  } else {
+    return contractPrincipalCV(toParts[0], toParts[1]);
+  }
+};
+
+const resolveRecipient = async (recipient: string): Promise<string> => {
+  try {
+    c32addressDecode(recipient);
+    return recipient;
+  } catch (e) {
+    const owner = await getNameInfo(toAscii(recipient));
+    if (owner?.owner) {
+      return owner.owner;
+    }
+    throw new Error(`No address for ${recipient}`);
+  }
 };
 
 function nonEmptyPart(p: Row) {
@@ -362,21 +358,36 @@ export function SendManyInputContainer({
     let { parts, total, hasMemos } = getPartsFromRows(
       useAssetForFees ? cloneAndAddFees(rows) : rows
     );
-    const updatedParts = await addToCVValues(parts);
-    let invalidNames = updatedParts.filter(r => !!r.error);
-    if (invalidNames.length > 0) {
-      updatePreview({ parts: updatedParts, total, hasMemos });
+
+    const resolvedPartsWithErrors = await Promise.all(
+      parts.map(async p => {
+        if (p.to === '') {
+          return p;
+        }
+        try {
+          return { ...p, toCV: await resolveRecipient(p.to) };
+        } catch (e) {
+          return { ...p, error: `${p.to} not found` };
+        }
+      })
+    );
+
+    const errors = resolvedPartsWithErrors.filter(r => !!r.error);
+    if (errors.length > 0) {
+      updatePreview({ parts: resolvedPartsWithErrors, total, hasMemos });
       setLoading(false);
       setStatus('Please verify receivers');
       return;
     }
+
     if (!namesResolved) {
-      updatePreview({ parts: updatedParts, total, hasMemos });
+      updatePreview({ parts: resolvedPartsWithErrors, total, hasMemos });
       setLoading(false);
       setNamesResolved(true);
       return;
     }
-    const nonEmptyParts = updatedParts.filter(nonEmptyPart);
+
+    const nonEmptyParts = resolvedPartsWithErrors.filter(nonEmptyPart);
     console.log(nonEmptyParts[0]);
     const firstMemo =
       nonEmptyParts.length > 0 && nonEmptyParts[0].memo ? nonEmptyParts[0].memo.trim() : '';
@@ -397,13 +408,13 @@ export function SendManyInputContainer({
                 nonEmptyParts.map(p => {
                   return hasMemos
                     ? tupleCV({
-                        to: p.toCV!,
+                        to: addrToCV(p.toCV!),
                         ustx: uintCV(p.ustx),
                         memo: bufferCVFromString(
                           firstMemoForAll ? firstMemo : p.memo ? p.memo.trim() : ''
                         ),
                       })
-                    : tupleCV({ to: p.toCV!, ustx: uintCV(p.ustx) });
+                    : tupleCV({ to: addrToCV(p.toCV!), ustx: uintCV(p.ustx) });
                 })
               ),
             ],
@@ -422,7 +433,7 @@ export function SendManyInputContainer({
             functionArgs: [
               nonEmptyParts.map(p => {
                 return tupleCV({
-                  to: p.toCV!,
+                  to: addrToCV(p.toCV!),
                   'xbtc-in-sats': uintCV(p.ustx),
                   memo: bufferCVFromString(
                     hasMemos ? (firstMemoForAll ? firstMemo : p.memo ? p.memo.trim() : '') : ''
@@ -455,7 +466,7 @@ export function SendManyInputContainer({
               listCV(
                 nonEmptyParts.map(p => {
                   return tupleCV({
-                    to: p.toCV!,
+                    to: addrToCV(p.toCV!),
                     sender: principalCV(ownerStxAddress),
                     amount: uintCV(p.ustx),
                     memo: hasMemos
@@ -494,7 +505,7 @@ export function SendManyInputContainer({
               listCV(
                 nonEmptyParts.map(p => {
                   return tupleCV({
-                    to: p.toCV!,
+                    to: addrToCV(p.toCV!),
                     amount: uintCV(p.ustx),
                     memo: hasMemos
                       ? firstMemoForAll
